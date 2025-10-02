@@ -18,9 +18,8 @@ RUN apt-get update && apt-get install -y \
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Configura el directorio de trabajo y el host virtual de Apache
-COPY 000-default.conf /etc/apache2/sites-available/000-default.conf
 COPY docker/000-default.conf /etc/apache2/sites-available/000-default.conf
 RUN a2enmod rewrite
 WORKDIR /var/www/html
 
-ENTRYPOINT ["/bin/sh", "-c", "chown -R www-data:www-data /var/www/html && php artisan migrate --force && apache2-foreground"]
+ENTRYPOINT ["/bin/sh", "-c", "chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache && apache2-foreground"]

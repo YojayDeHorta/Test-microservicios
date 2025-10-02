@@ -1,0 +1,61 @@
+
+services:
+  # Servicio de Autenticación
+  auth-service:
+    build: ./auth-service # Directorio del proyecto Laravel
+    ports:
+      - "8001:80" # Mapea el puerto 8001 de tu máquina al 80 del contenedor
+    volumes:
+      - ./auth-service:/var/www/html
+    networks:
+      - blog-network
+
+  # Servicio de Publicaciones
+  post-service:
+    build: ./post-service
+    ports:
+      - "8002:80"
+    volumes:
+      - ./post-service:/var/www/html
+    networks:
+      - blog-network
+
+  # API Gateway
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "8000:80" # Este es el puerto de entrada principal
+    volumes:
+      - ./api-gateway:/var/www/html
+    networks:
+      - blog-network
+
+  # Base de datos para el servicio de autenticación
+  db_auth:
+    image: mysql:8.0
+    ports:
+      - "33060:3306" # Cambiado el puerto del host para evitar conflictos
+    environment:
+      MYSQL_DATABASE: db_auth
+      MYSQL_ROOT_PASSWORD: Test789
+      MYSQL_USER: yojay
+      MYSQL_PASSWORD: Test789
+    networks:
+      - blog-network
+
+  # Base de datos para el servicio de publicaciones
+  db_posts:
+    image: mysql:8.0
+    ports:
+      - "33070:3306"
+    environment:
+      MYSQL_DATABASE: db_posts
+      MYSQL_ROOT_PASSWORD: Test789
+      MYSQL_USER: yojay
+      MYSQL_PASSWORD: Test789
+    networks:
+      - blog-network
+
+networks:
+  blog-network:
+    driver: bridge
